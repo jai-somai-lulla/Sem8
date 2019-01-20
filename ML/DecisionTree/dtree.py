@@ -1,10 +1,15 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt 
 from sklearn.metrics import confusion_matrix 
 from sklearn.model_selection import train_test_split 
 from sklearn.tree import DecisionTreeClassifier 
 from sklearn.metrics import accuracy_score 
 from sklearn.metrics import classification_report 
+from sklearn.preprocessing import OneHotEncoder
+from sklearn import tree
+import graphviz
+
 #import sklearn
 
 def splitdataset(df): 
@@ -22,25 +27,51 @@ def cal_accuracy(y_test, y_pred):
 	confusion_matrix(y_test, y_pred))       
 	print ("Accuracy : ", 
 	accuracy_score(y_test,y_pred)*100)       
-	print("Report : ", 
-	classification_report(y_test, y_pred)) 
+	#print("Report : ", 
+	#classification_report(y_test, y_pred)) 
+	
     
 def libdtree(X_train, X_test, y_train):
 	model = DecisionTreeClassifier( 
             criterion = "entropy", random_state = 100, 
-            max_depth = 3, min_samples_leaf = 5) 
+            max_depth = 5, min_samples_leaf = 1) 
 	model.fit(X_train, y_train) 
 	y_pred = model.predict(X_test) 	
-	return y_pred
+	return y_pred,model
 	      
 def main():
 	print("Decision Tree\n")
 	df = pd.read_csv("data.csv",index_col='ID') 		
-	print(df)
+	columns=list(df)
+	#print(df)
 	df[:] = df[:].astype('category')
+	df.info()
+	#df['Buys'],class_names = pd.factorize(df['Buys'])
+	invert=[]
+	for column in df:
+		df[column],class_names=pd.factorize(df[column])
+	
+	#print class_names
+	
 	X, Y, X_train, X_test, y_train, y_test = splitdataset(df) 	
-	y_pred = libdtree(X_train, X_test, y_train)
-	#cal_accuracy(y_test,y_pred)
+	y_pred,model = libdtree(X_train, X_test, y_train)
+	cal_accuracy(y_test,y_pred)
+	feature_names = columns[0:4]
+	dot_data = tree.export_graphviz(model, out_file='tree.dot', filled=True, rounded=True,
+                                feature_names=feature_names,  
+                                class_names=class_names)
+	graph = graphviz.Source(dot_data)  
+	graph
+	# Convert to png
+	from subprocess import call
+	call(['dot', '-Tpng', 'tree.dot', '-o', 'tree.png', '-Gdpi=600'])
+
+	# Display in python
+	plt.figure(figsize = (14, 18))
+	plt.imshow(plt.imread('tree.png'))
+	plt.axis('off');
+	plt.show();
+
 	
 if __name__=="__main__": 
     main()
