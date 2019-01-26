@@ -29,7 +29,6 @@ class neuron:
 		for i in range(self.inputs):
 			correction = error*X[i]*self.learning_rate
 			self.weight_matrix[i] += correction
-
 def main():
 	#print ('Percptron')
 	n1 = neuron(3)  
