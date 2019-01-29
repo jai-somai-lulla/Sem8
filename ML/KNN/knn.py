@@ -18,7 +18,7 @@ def main():
 	#print df
 	distances=[]
 	for t in test:
-		print t
+		print t['0','1']
 		
 	#print distance([2,3],[2,1])
 	
