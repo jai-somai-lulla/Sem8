@@ -13,4 +13,9 @@
 #### M.L
 	Linear Regression
 	Decision Tree
+	K Nearest Neighbors
+
+#### SoftComputing
+	Perception
+	Neural Network
 	
