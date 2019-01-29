@@ -11,18 +11,34 @@ def distance(a,b):
 
 def main():
 	print ('K Nearest')
+	k = 3
 	data = [(2,3,'a'),(2,1,'a'),(1,3,'a'),(-2,-3,'b'),(-1,-3,'b'),(-2,-1,'b')]
 	df=pd.DataFrame(data)
 	test =[(4,4,'a'),(-4,-4,'b')]
-	test=pd.DataFrame(test)
+	#test=pd.DataFrame(test)
 	#print df
-	distances=[]
+	#print test
+	correct=0
 	for t in test:
-		print t['0','1']
+		distances=[]
+		votes={}
+		print "Test point :"+str(t[0:2])
+		for x in data :
+			dx=distance(t[0:2],x[0:2])
+			pair=[dx,x[2]]
+			votes[x[2]]=0
+			distances.append(pair)
 		
-	#print distance([2,3],[2,1])
-	
-	
+		distances.sort()
+		
+		for index in range(k):
+			votes[distances[index][1]]+=1
+			
+		#print votes
+		predicted=max(votes,key=votes.get)
+		if predicted==t[2]:
+			correct+=1
+	print (correct/float(len(test))) * 100.0
 		
 if __name__=='__main__':
 	main()	
