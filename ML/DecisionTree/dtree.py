@@ -65,16 +65,44 @@ def entropy(s):
 
 def dtree(df,columns):
 	print df
+	print "Columns :"+str(columns)
+	val = np.unique(df['Buys'].values)
+	if(len(val)==1):
+		print "Region_DF is "+str(val[0])
+		return
+	
+	if(len(df)==0 or len(columns)==0):
+		print 'Termination Criteria'
+		return
+		
+	baseGain=entropy(df['Buys'].values)
 	infodict={}
 	#print columns
 	for cname in columns:
-		print "For column :"+cname
+		#print "For column :"+cname
 		e=0
 		for region, df_region in df.groupby(cname):
 			#print(df_region)
 			e+=(float(len(df_region))/len(df))*entropy(df_region['Buys'].values)
-		infodict[cname]=e
-	print infodict		      
+		infodict[cname]=e	
+	
+	print infodict
+	for key in infodict:
+		infodict[key]=baseGain-infodict[key]
+	print infodict	
+	target_column = max(infodict,key=infodict.get)
+	columns.remove(target_column)
+		
+	print 'Target :'+target_column
+	for region, df_region in df.groupby(target_column):
+		dtree(df_region,columns)	
+
+class decisionnode:
+	def __init__(self,name,branches,value,leaf):
+		self.name=name
+		self.branches=branches
+		self.value=value
+			      
 def main():
 	print("Decision Tree\n")
 	df = pd.read_csv("data.csv",index_col='ID') 		
