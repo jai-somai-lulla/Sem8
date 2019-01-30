@@ -62,7 +62,19 @@ def entropy(s):
 		if p != 0.0:
 			res -= p * np.log2(p)
 	return res
-    	      
+
+def dtree(df,columns):
+	print df
+	infodict={}
+	#print columns
+	for cname in columns:
+		print "For column :"+cname
+		e=0
+		for region, df_region in df.groupby(cname):
+			#print(df_region)
+			e+=(float(len(df_region))/len(df))*entropy(df_region['Buys'].values)
+		infodict[cname]=e
+	print infodict		      
 def main():
 	print("Decision Tree\n")
 	df = pd.read_csv("data.csv",index_col='ID') 		
@@ -82,10 +94,12 @@ def main():
 	#cal_accuracy(y_test,y_pred)
 	feature_names = columns[0:4]
 	#plot(model,class_names,feature_names)
-	print df
-	print entropy(df['Buys'].values)
-	#print entropy()
-
+	#print df
+	#print entropy(df['Buys'].values)
+	
+	columns.remove('Buys')
+	dtree(df,columns)
+	
 	
 if __name__=="__main__": 
     main()
