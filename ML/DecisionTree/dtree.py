@@ -66,12 +66,17 @@ def entropy(s):
 def dtree(df,columns):
 	print df
 	print "Columns :"+str(columns)
-	val = np.unique(df['Buys'].values)
+	val,count= np.unique(df['Buys'].values,return_counts=True)
+	
 	if(len(val)==1):
 		print "Region_DF is "+str(val[0])
-		return
-	
-	if(len(df)==0 or len(columns)==0):
+		return decisionnode(name="Decision",value=val[0],leaf=True)
+		
+	if len(columns)==0:
+		label=val[count.index(max(count))]
+		return decisionnode(name="Decision",value=label,leaf=True)
+		
+	if(len(df)==0):
 		print 'Termination Criteria'
 		return
 		
@@ -94,15 +99,21 @@ def dtree(df,columns):
 	columns.remove(target_column)
 		
 	print 'Target :'+target_column
+	branches=[]
 	for region, df_region in df.groupby(target_column):
-		dtree(df_region,columns)	
+		branches.append(dtree(df_region,columns))
+	return decisionnode(name=target_column,branches=branches)	
 
 class decisionnode:
-	def __init__(self,name,branches,value,leaf):
+	def __init__(self,name,value=None,branches=None,leaf=False):
 		self.name=name
 		self.branches=branches
+		self.leaf=leaf
 		self.value=value
-			      
+	def parse():
+		print 'Root-->'
+			
+		
 def main():
 	print("Decision Tree\n")
 	df = pd.read_csv("data.csv",index_col='ID') 		
@@ -126,7 +137,7 @@ def main():
 	#print entropy(df['Buys'].values)
 	
 	columns.remove('Buys')
-	dtree(df,columns)
+	tree=dtree(df,columns)
 	
 	
 if __name__=="__main__": 
