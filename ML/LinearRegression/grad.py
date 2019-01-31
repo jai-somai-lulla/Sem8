@@ -16,7 +16,7 @@ def gradient_descent(X, Y, B, alpha, iterations):
 	m = len(Y)
     
 	for iteration in range(iterations):
-        # Hypothesis Values
+        # Hypothesis Values for entire set data
 		h = X.dot(B)
         # Difference b/w Hypothesis and Actual Y
 		loss = h - Y
