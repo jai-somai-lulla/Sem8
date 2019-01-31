@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import Queue
 #import matplotlib.pyplot as plt 
 from sklearn.metrics import confusion_matrix 
 from sklearn.model_selection import train_test_split 
@@ -63,18 +64,18 @@ def entropy(s):
 			res -= p * np.log2(p)
 	return res
 
-def dtree(df,columns):
+def dtree(df,columns,level,resultOf=None):
 	print df
 	print "Columns :"+str(columns)
 	val,count= np.unique(df['Buys'].values,return_counts=True)
 	
 	if(len(val)==1):
 		print "Region_DF is "+str(val[0])
-		return decisionnode(name="Decision",value=val[0],leaf=True)
+		return decisionnode(name="Decision",value=val[0],leaf=True,level=level,resultOf=resultOf)
 		
 	if len(columns)==0:
 		label=val[count.index(max(count))]
-		return decisionnode(name="Decision",value=label,leaf=True)
+		return decisionnode(name="Decision",value=label,leaf=True,level=level,resultOf=resultOf)
 		
 	if(len(df)==0):
 		print 'Termination Criteria'
@@ -101,19 +102,33 @@ def dtree(df,columns):
 	print 'Target :'+target_column
 	branches=[]
 	for region, df_region in df.groupby(target_column):
-		branches.append(dtree(df_region,columns))
-	return decisionnode(name=target_column,branches=branches)	
+		branches.append(dtree(df_region,columns,level+1,{target_column:region}))
+	return decisionnode(name=target_column,branches=branches,level=level,resultOf=resultOf)	
 
 class decisionnode:
-	def __init__(self,name,value=None,branches=None,leaf=False):
+	L = Queue.Queue(maxsize=0) 
+	
+	def __init__(self,name,level,value=None,branches=None,leaf=False,resultOf=None):
 		self.name=name
 		self.branches=branches
 		self.leaf=leaf
 		self.value=value
-	def parse():
-		print 'Root-->'
+		self.level=level
+		self.resultOf=resultOf
+	
+	def parseTree(self):
+		decisionnode.L.put(self)
+		current=None
+		while (not(decisionnode.L.empty())):
+			current=decisionnode.L.get()
 			
-		
+			print 'Name: '+ current.name + "|ResultOf:"+str(current.resultOf)+" |At Level: "+str(current.level)+" |Value: " + str(current.value) 
+			
+			for b in (current.branches or []):
+				#print b
+				decisionnode.L.put(b)
+				
+			
 def main():
 	print("Decision Tree\n")
 	df = pd.read_csv("data.csv",index_col='ID') 		
@@ -137,7 +152,8 @@ def main():
 	#print entropy(df['Buys'].values)
 	
 	columns.remove('Buys')
-	tree=dtree(df,columns)
+	tree=dtree(df,columns,0)
+	tree.parseTree()
 	
 	
 if __name__=="__main__": 
