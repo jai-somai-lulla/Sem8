@@ -10,11 +10,15 @@
  */
 ```
 
-#### M.L
+#### ML
 	Linear Regression
 	Decision Tree
 	K Nearest Neighbors
+	K Means
 
+#### ICS
+	S-DES
+	
 #### SoftComputing
 	Perception
 	Neural Network
