@@ -48,7 +48,7 @@ class NeuralNetwork:
 				#print self.y.iloc[index]
 				
 				actual= self.y.iloc[index,0]
-				#self.backprop(row,actual)
+				self.backprop(row,actual)
 				#print xi
 				
 	def backprop(self,x,actual):	
@@ -59,15 +59,16 @@ class NeuralNetwork:
 		print "A2_DELTA :"+ str(a2_delta)
 		print "Z1_DELTA :"+ str(z1_delta)
 		print "A1_DELTA :"+ str(a1_delta)
-		
-		
-		#print "A1.T :"+str(self.a1.T)
+				
+		print "A1.T :"+str(self.a1.T)
 		#print a2_delta	
 		print "W2 :"+str(self.w2)
 		print "W1 :"+str(self.w1)
 		
+		print 'SANS'+str(self.lr * (self.a1.T * a2_delta))
+		print "W2 :"+str(self.w2.T)
+
 		self.w2 -= self.lr * (self.a1.T * a2_delta)
-		
 		self.w1 -= self.lr * np.dot(self.x.T, a1_delta)
 		
 			
@@ -78,9 +79,10 @@ def main():
 	train_outputs = [0, 1, 1, 1]
 	op=pd.DataFrame(train_outputs)
 	ip=pd.DataFrame(train_inputs)
+	print op
 	#print ip.shape[1]
 	nn = NeuralNetwork(ip,op)
 	nn.train()
 		
 if __name__=="__main__":
-	main()		
+	main()
