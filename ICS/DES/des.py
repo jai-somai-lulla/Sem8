@@ -5,8 +5,8 @@ P10 = (3, 5, 2, 7, 4, 10, 1, 9, 8, 6)
 P8 = (6, 3, 7, 4, 8, 5, 10, 9)
 P4 = (2, 4, 3, 1)
 
-IP = (2, 6, 3, 1, 4, 8, 5, 7)
-IPi = (4, 1, 3, 5, 7, 2, 8, 6)
+IP = (2, 6, 3, 1, 4, 8, 5, 7) #Data encreption Initial permutation  
+IPi = (4, 1, 3, 5, 7, 2, 8, 6) #Data encreption Final permutation
 
 E = (4, 1, 2, 3, 2, 3, 4, 1)
 S0 = [
@@ -80,16 +80,59 @@ def main():
 	second_key = generate_second_key(left, right)
 	print "[*] First key: " + first_key
 	print "[*] Second key: " + second_key
-	permutated_cipher = permutation(IP, cipher)
-	print "IP: " + permutated_cipher
-	first_half_cipher = permutated_cipher[:len(permutated_cipher)/2]
-	second_half_cipher = permutated_cipher[len(permutated_cipher)/2:]
+	
+	
+	initialPremute = permutation(IP, cipher)
+	print "IP: " + initialPremute
+	first_half_cipher = initialPremute[:len(initialPremute)/2]
+	second_half_cipher = initialPremute[len(initialPremute)/2:]
 	
 	left, right = f(first_half_cipher, second_half_cipher, second_key)
+	
 	print "SW: " + right + left
+	
 	left, right = f(right, left, first_key) # switch left and right!
-
-	print "IP^-1: " + permutation(IPi, left + right)
+	
+	finalPremute=permutation(IPi, left + right)
+	
+	print "IP^-1 Encrepted Cipher Text: " + finalPremute
 
 if __name__ == "__main__":
 	main()
+
+'''
+Keygen
+10 bit key 
+P10
+split
+	rot by 1 left
+	merge 
+	p8
+	K1
+	
+	rot by 3 left
+	merge 
+	p8
+	K2
+'''
+
+''' 
+8 BIT DATA ->  Inital Premute(8BD)
+IP 
+Split L4,R4
+do 2 times with k1,k2
+	L4=L4
+	R8=ExpPremute(R4) 
+	R8=XOR(R8,KEY8)
+	Split
+		S0 2Bit=SBOX(R1(RC))
+		S1 2Bit=SBOX(R2(RC))
+		MERGE
+	SX=(S0 + S1)4Bit from SBOX0,1
+	p4=P4(SX)	
+	L=L^p4
+	L(XORED with a jumbled R),R(what i started with)
+	swap L and R
+	so now the other half is changed in second run
+			
+'''
