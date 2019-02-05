@@ -123,40 +123,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-'''
-Keygen
-10 bit key 
-P10
-split
-	rot by 1 left
-	merge 
-	p8
-	K1
-	
-	rot by 3 left
-	merge 
-	p8
-	K2
-'''
-
-''' 
-8 BIT DATA ->  Inital Premute(8BD)
-IP 
-Split L4,R4
-do 2 times with k1,k2
-	L4=L4
-	R8=ExpPremute(R4) 
-	R8=XOR(R8,KEY8)
-	Split
-		S0 2Bit=SBOX(R1(RC))
-		S1 2Bit=SBOX(R2(RC))
-		MERGE
-	SX=(S0 + S1)4Bit from SBOX0,1
-	p4=P4(SX)	
-	L=L^p4
-	L(XORED with a jumbled R),R(what i started with)
-	swap L and R
-	so now the other half is changed in second run
-			
-'''
+ 
