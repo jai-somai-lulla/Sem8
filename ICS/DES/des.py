@@ -1,6 +1,7 @@
 # parameters
 key = "0111111101"
-cipher = "10100010"
+#cipher = "10100010"
+cipher = "01101101"
 P10 = (3, 5, 2, 7, 4, 10, 1, 9, 8, 6)
 P8 = (6, 3, 7, 4, 8, 5, 10, 9)
 P4 = (2, 4, 3, 1)
@@ -68,13 +69,16 @@ def f(first_half, second_half, key):
 	return bin(left)[2:].zfill(4), second_half	
 
 def main():
+
+	print "======Key-Gen======"
+	
 	print key
 	p10key = permutation(P10, key)
 	#print "Initial Permutation:"+p10key
 	left = p10key[:len(p10key)/2]
 	right = p10key[len(p10key)/2:]
-	print "Left:"+left
-	print "Right:"+right
+	#print "Left:"+left
+	#print "Right:"+right
 
 	first_key = generate_first_key(left, right)
 	second_key = generate_second_key(left, right)
@@ -82,6 +86,8 @@ def main():
 	print "[*] Second key: " + second_key
 	
 	
+	print '\n==========Enrecption========'
+	print "Plain text :"+cipher
 	initialPremute = permutation(IP, cipher)
 	print "IP: " + initialPremute
 	first_half_cipher = initialPremute[:len(initialPremute)/2]
@@ -96,6 +102,24 @@ def main():
 	finalPremute=permutation(IPi, left + right)
 	
 	print "IP^-1 Encrepted Cipher Text: " + finalPremute
+	#print "\n\n\n------------------------------------------------"
+	
+	#finalPremute="01000110"
+	
+	print '\n==========Decreption========'
+	print "Cipher :"+finalPremute
+	initialPremute=permutation(IP,finalPremute)
+	print "Initial P:"+initialPremute
+	first_half_cipher = initialPremute[:len(initialPremute)/2]
+	second_half_cipher = initialPremute[len(initialPremute)/2:]
+	left, right = f(first_half_cipher, second_half_cipher, first_key)
+	print "SW: " + right + left
+	left, right = f(right, left, second_key) # Swapped
+	finalPremute=permutation(IPi, left + right)
+	print "Plain Text: " + finalPremute
+	print "\n"
+
+	
 
 if __name__ == "__main__":
 	main()
