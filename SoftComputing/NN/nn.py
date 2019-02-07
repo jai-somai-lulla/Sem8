@@ -67,7 +67,7 @@ class NeuralNetwork:
 		print "W2 :"
 		print self.w2
 		del1 = (x.values)#*mse_derv(self.a2, actual)*sigmoid_derv(self.a2)
-		print "L1 :"
+		print "DEL1 :"
 		print del1	
 		
 		

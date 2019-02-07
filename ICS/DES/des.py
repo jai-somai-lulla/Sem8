@@ -103,7 +103,6 @@ def main():
 	
 	print "IP^-1 Encrepted Cipher Text: " + finalPremute
 	#print "\n\n\n------------------------------------------------"
-	
 	#finalPremute="01000110"
 	
 	print '\n==========Decreption========'
