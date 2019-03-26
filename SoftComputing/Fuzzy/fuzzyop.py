@@ -66,7 +66,7 @@ class FuzzySet:
 		
 	@staticmethod
 	def maxproduct(x,y):
-		print 'Max-Min'
+		print 'Max-Product'
 		#z = []
 		z = [[0 for i in range(x.shape[0])] for i in range(y.shape[1])] 
 		row=0
