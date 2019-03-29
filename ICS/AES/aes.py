@@ -34,7 +34,7 @@ def subNibble(nibble):
 	#print 'Converted	:'+matrix[row][col]
 	return matrix[row][col]
 	
-def invSubNibbles(nibble):
+def invSubNibble(nibble):
 	matrix= [['A','5','9','B'],
 	['1','7','8','F'],
 	['6','0','2','3'],
@@ -48,34 +48,47 @@ def fieldMul(k,n):
 	ans=0	
 	if k==4:
 		ans=n*k
-		#if(ans)
+		while(ans>=16):
+			if(ans>=32):
+				ans%=19
+			ans^=19
+		
 	elif k==2:
 		ans=2*k
 		if(ans>15):
 			ans=ans^19
-	elif ans=9:
+	elif k==9:
 		ans=n*k
 		#if(ans)
+		
+	print "K	:",k
+	print "N	:",n
+		
+	print "Mult	: {:x}".format(ans)
+	print ''
+	return ans
 	
+def fieldTable(k,n):
+	table={4:['0', '4', '8', 'c', '3', '7', 'b', 'f', '6', '2', 'e', 'a', '5', '1', 'd', '9'],
+	2:['0' ,'2' ,'4' ,'6', '8', 'a' ,'c' ,'e', '3' ,'1' ,'7' ,'5' ,'b' ,'9' ,'f' ,'d'],
+	9:['0' ,'9' ,'1' ,'8' ,'2' ,'b' ,'3' ,'a', '4' ,'d' ,'5' ,'c', '6', 'f ','7', 'e' ]
+	}
+	return table[k][n] 
 
 def mixcolumns(n1,n2):
 	n1=int(n1,16)
 	n2=int(n2,16)
-	print "N1: "+str(n1)
-	print "N2: "+str(n2)
-	a1=(n1) ^ ((4*n2))
-	a2=((4*n1)) ^ (n2)	
-#	print "Mixed col	:"+'{:x}'.format(a1) + '{:x}'.format(a2)
-	print "A1: "+str(a1)
-	print "A2: "+str(a2)
+
+	a1=(n1) ^ int(fieldTable(4,n2),16)
+	a2=int(fieldTable(4,n1),16) ^ (n2)	
 	
 	return '{:x}'.format(a1),'{:x}'.format(a2)
 
-def invmixcolumn(n1,n2):
+def invmixcolumns(n1,n2):
 	n1=int(n1,16)
 	n2=int(n2,16)
-	a1=9*n1 ^ 2*n2
-	a2=2*n1 ^ 9*n2	
+	a1=int(fieldTable(9,n1),16) ^ int(fieldTable(2,n2),16)
+	a2=int(fieldTable(2,n1),16) ^ int(fieldTable(9,n2),16)
 	return '{:x}'.format(a1),'{:x}'.format(a2)
 
 def keyGen(key):	
@@ -117,10 +130,16 @@ def keyGen(key):
 	k[0]=w[0]+w[1]
 	k[1]=w[2]+w[3]
 	k[2]=w[4]+w[5]
+	print 'Key 0		:' +k[0] + "  " +binToHex(k[0])	
+	print 'Key 1		:' +k[1] + "  " +binToHex(k[1])
+	print 'Key 2		:' +k[2] + "  " +binToHex(k[2])
 	return k
 
 def genCipher(plain,k):
+
+	print '\n\n -----Encryption----- \n'
 	print 'Plain Text	:' +plain + "  " +binToHex(plain)
+	print '\nPreGame'
 	print 'Key 0		:' +k[0] + "  " +binToHex(k[0])
 	
 	#Pre Round Transform
@@ -129,33 +148,110 @@ def genCipher(plain,k):
 		
 		
 	#Round 1
+	print '\nRound 1'
 	temp=''
 	for i in range(4):
 		temp+= subNibble(prt[i*4:(i+1)*4])	
 	print 'Sub :'+temp
-	t1=temp[:2]
-	t2=rotate(temp[2:],1)
-	temp=t1+t2
+	
+	
+	#t1=temp[:2]
+	#t2=rotate(temp[2:],1)
+	#temp=t1+t2
+	t1=temp[0]+temp[3]+temp[2]+temp[1]
+	temp=t1
 	print 'Rot :'+temp
 	
-	t0,t2	= mixcolumns(temp[0],temp[2])
-	t1,t3	= mixcolumns(temp[1],temp[3])
+	t0,t1	= mixcolumns(temp[0],temp[1])
+	t2,t3	= mixcolumns(temp[2],temp[3])
 	temp = t0+t1+t2+t3
 	print 'MIX :'+ temp
 	
+	print 'Key 1		:' +k[1] + "  " +binToHex(k[1])
+	temp=xorhex(temp,binToHex(k[1]))
+	print 'ARK :'+ temp
 	
+	print '\nRound 2'	
+	#Round 2
+	prt=hexToBin(temp,16)
+	print 'PRT2 :'+ prt
+	temp=''
+	for i in range(4):
+		temp+=subNibble(prt[i*4:(i+1)*4])
+	print 'Sub :'+temp
+	
+	t1=temp[0]+temp[3]+temp[2]+temp[1]
+	temp=t1
+	print 'Rot :'+temp
+	
+	print 'Key 2		:' +k[2] + "  " +binToHex(k[2])
+	temp=xorhex(temp,binToHex(k[2]))
+	print 'ARK :'+ temp
+	
+	
+	return temp
+	
+def genPlain(cipher,k):
+	
+	print '\n\n -----Decryption----- \n'
+	temp=cipher
+	print 'temp		:',temp
+	
+	#r2inv
+	temp=xorhex(temp,binToHex(k[2]))
+	print 'temp		:',temp
+	
+	t1=temp[0]+temp[3]+temp[2]+temp[1]
+	temp=t1
+	print 'temp		:',temp
+	
+	prt=hexToBin(temp,16)
+	#print 'PRT2 :'+ prt
+	temp=''
+	for i in range(4):
+		temp+=invSubNibble(prt[i*4:(i+1)*4])
+	
+	print 'Give to r1 inv :',temp	
+		
+	#r1	inv
+	temp=xorhex(temp,binToHex(k[1]))	
+	print 'temp		:',temp
+	
+	t0,t1	= invmixcolumns(temp[0],temp[1])
+	t2,t3	= invmixcolumns(temp[2],temp[3])
+	temp = t0+t1+t2+t3
+	print 'temp		:',temp
+	
+	t1=temp[0]+temp[3]+temp[2]+temp[1]
+	temp=t1
+	print 'temp		:',temp
+	
+	prt=hexToBin(temp,16)
+	temp=''
+	for i in range(4):
+		temp+= invSubNibble(prt[i*4:(i+1)*4])	
+		
+	#pre round	
+	temp = xorhex(temp,binToHex(k[0]))
+	print 'temp		Final:',temp
+	
+	return temp
 	
 	
 	
 def main():
-	key = "0010 0111 0100 0101" #16 bit
-	plain = "0001 0010 1010 0011" #16 bit
+	key = "0010 0100 0111 0101" #16 bit
+	plain = "0001 1010 0010 0011" #16 bit
 	rounds = 2
 	plain = plain.replace(' ','')
 	k = keyGen(key)
+	#for i in range(16):
+	#	fieldMul(4,i)
+	cipher=genCipher(plain,k)
+	print "Cipher	       :",hexToBin(cipher,16)," 0x",cipher 
 	
-	genCipher(plain,k)
-	
+	pt=genPlain(cipher,k)
+	print "Plain	       :",hexToBin(pt,16)," 0x",pt 
 	#print binToHex(k[0])
 	#print binToHex(k[1])
 	#print binToHex(k[2])
