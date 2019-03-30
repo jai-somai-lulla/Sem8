@@ -17,8 +17,8 @@ def makeplot(centers,data):
 			plt.scatter(d[0],d[1],marker='.', c='r', s=30)
 		else:
 			plt.scatter(d[0],d[1],marker='.', c='g', s=30)
-	plt.show()
-	plt.clf()
+	plt.show(block=False)
+	
 def newCenters(data,k):
 	centers=[]
 	count=np.zeros(k)
@@ -45,6 +45,7 @@ def main():
 	print 'K-Means'
 	points = [(0.1,0.6,-1),(0.15,0.71,-1),(0.08,0.9,-1),(0.16,0.85,-1),(0.2,0.3,-1),(0.25,0.5,-1),(0.24,0.1,-1),(0.3,0.2,-1)]
 	data = np.array(points)
+	limit=10
 	#print data
 	#print data
 	#print points[0]
@@ -66,8 +67,8 @@ def main():
 		dist.append(np.zeros(len(data)))
 	dist=np.array(dist)
 #	print dist
-		
-	for epoch in range(2):
+	old=[]	
+	for epoch in range(limit):
 		print "e",epoch
 		i=0
 		for c in centers:
@@ -81,9 +82,31 @@ def main():
 		print dist
 		data[:,2]=np.argmin(dist,axis=0)	
 		
-		raw_input()			
 		makeplot(centers,data)
-		centers = newCenters(data,k)			 	
+		raw_input("Press any Key to Continue:")			
+		plt.clf()
+		plt.cla()
+		plt.close()
+		
+		
+		print 'Making centers for next epoch\n'
+		old = centers
+		centers = newCenters(data,k)
+		
+		
+		
+		if np.all(old==centers):
+			print 'No shift, We have converged'
+			print 'OLD Centers ',id(old),':',old
+			print 'NEW Centers ',id(centers),':',centers
+			break
+		
+		
+		print '\n\n'
+	
+	makeplot(centers,data)		
+	raw_input("Press any Key to EXIT:")			
+					 	
 if __name__=="__main__":
 	main()
 		
