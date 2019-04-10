@@ -99,15 +99,15 @@ def mutate(population):
 	return mute_pop		 		
 		
 def main():
-	optimal="HELLO WORLD"
-	population_size = 5
+	optimal="HELLO TANVI"
+	population_size = 50
 	chromosome_size = len(optimal)
 	print "\nGenetic Algorithm\n"
 	print "Goal:",optimal
 	print "Population Size",population_size
 	print "Chromosome Size",chromosome_size
 	print '\n'
-	GENERATIONS = 10
+	GENERATIONS = 100000
 	
 	population = init_population(population_size,chromosome_size)	
 	#del population[1]
