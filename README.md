@@ -19,11 +19,6 @@
 #### ICS
 	S-DES
 	S-AES
-	
-	
-#### SoftComputing
-	Perception
-	Neural Network
-
-#### Mini-Project
-	ML-MNIST	
+	RSA
+	DH
+	ECC
