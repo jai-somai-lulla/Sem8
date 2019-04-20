@@ -1,262 +1,170 @@
-def binToHex(bin):
-	bin.replace(' ', '')
-	return hex(int(bin, 2))
+key = "0010 0100 0111 0101" #16 bit
+pt = '1001 0100 0010 0111'
+rc1='80'
+rc2='30'
 
-def hexToBin(my_hexdata,l=4):
-	return bin(int(my_hexdata, 16))[2:].zfill(l)
-
-def xorbin(a,b,l=8):
-	y = int(a, 2)^int(b,2)
-	return bin(y)[2:].zfill(l)
-
-def xorhex(a,b):	
-	result = int(a, 16) ^ int(b, 16) # convert to integers an
-	return '{:x}'.format(result)     # convert back to hexadecimal
-
-def rotate(data,l=4):
-	p1 = data[:l]
-	p2 = data[l:]         
-	#print 'rot	:'+binToHex(p2+p1)   	
-	return (p2+p1)
-
-def subNibble(nibble):
-	#print 'Nibble	:'+ binToHex(nibble)  + " " + nibble
-	matrix = [['9','4','A','B'],
+S = [['9','4','A','B'],
 	['D','1','8','5'],
 	['6','2','0','3'],
-	['C','E','F','7']]
+	['C','E','F','7']]	
 	
-	col = int(nibble[2]+nibble[3],2)
-	row = int(nibble[0]+nibble[1],2)
-	#print 'Row'+ str(row)
-	#print 'Col'+ str(col)
-	
-	#print 'Converted	:'+matrix[row][col]
-	return matrix[row][col]
-	
-def invSubNibble(nibble):
-	matrix= [['A','5','9','B'],
+Si = [['A','5','9','B'],
 	['1','7','8','F'],
 	['6','0','2','3'],
 	['C','4','D','E']] 
+	
+	
 
-	col = int(nibble[2]+nibble[3],2)
-	row = int(nibble[0]+nibble[1],2)
-	return matrix[row][col]
+def xor(h1,h2):
+	return hex(int(h1,16)^int(h2,16))[2:]
 
-def fieldMul(k,n):
-	ans=0	
-	if k==4:
-		ans=n*k
-		while(ans>=16):
-			if(ans>=32):
-				ans%=19
-			ans^=19
+def subNibble(nib,box):
+	bits = bin(int(nib,16))[2:].zfill(4)
+	row = int(bits[0]+bits[1],2)
+	col = int(bits[2]+bits[3],2)
+	return box[row][col]
+
+def genT(oddw,rc):
+	t0=subNibble(oddw[0],S)	
+	t1=subNibble(oddw[1],S)
+	t2=t1+t0
+	return xor(t2,rc)
+	
+	
+def keygen(key):
+	sk = []
+	w = [0]*6
+	
+	k = hex(int(key.replace(' ',''),2))[2:]
+	#print k
+	w[0] = k[:2]
+	w[1] = k[2:]
+	sk.append(w[0]+w[1])
+
+	t2=genT(w[1],rc1)
+	#print t2
+	
+	w[2]=xor(t2,w[0])
+	w[3]=xor(w[2],w[1])
+	sk.append(w[2]+w[3])
+	
+	t4=genT(w[3],rc2)
+	w[4]=xor(t4,w[2])
+	w[5]=xor(w[4],w[3])
+	sk.append(w[4]+w[5])
+	return sk
+	
+def rot(state):
+	return state[0]+state[3]+state[2]+state[1]
+	
+def sub(state,S):
+	r=''
+	for s in state:
+		r+=subNibble(s,S)
+	return r
+
+
+#	1	4
+#	4	1	
+
+def mult(num,h):
+	h=int(h,16)
+	val = num * h
+	
+	if(num!=9):
+		if val >= 64:	
+			val ^= 76
+		if val >= 32:
+			val ^= 38
+		if val >= 16:
+			val ^= 19
 		
-	elif k==2:
-		ans=2*k
-		if(ans>15):
-			ans=ans^19
-	elif k==9:
-		ans=n*k
-		#if(ans)
+	else:
+		val = 8 * h
+		if val >= 64:
+			val ^= 76
+		if val >= 32:
+			val ^= 38
+		if val >= 16:
+			val ^= 19
+		val ^= h	
 		
-	print "K	:",k
-	print "N	:",n
-		
-	print "Mult	: {:x}".format(ans)
-	print ''
-	return ans
-	
-def fieldTable(k,n):
-	table={4:['0', '4', '8', 'c', '3', '7', 'b', 'f', '6', '2', 'e', 'a', '5', '1', 'd', '9'],
-	2:['0' ,'2' ,'4' ,'6', '8', 'a' ,'c' ,'e', '3' ,'1' ,'7' ,'5' ,'b' ,'9' ,'f' ,'d'],
-	9:['0' ,'9' ,'1' ,'8' ,'2' ,'b' ,'3' ,'a', '4' ,'d' ,'5' ,'c', '6', 'f ','7', 'e' ]
-	}
-	return table[k][n] 
-
-def mixcolumns(n1,n2):
-	n1=int(n1,16)
-	n2=int(n2,16)
-
-	a1=(n1) ^ int(fieldTable(4,n2),16)
-	a2=int(fieldTable(4,n1),16) ^ (n2)	
-	
-	return '{:x}'.format(a1),'{:x}'.format(a2)
-
-def invmixcolumns(n1,n2):
-	n1=int(n1,16)
-	n2=int(n2,16)
-	a1=int(fieldTable(9,n1),16) ^ int(fieldTable(2,n2),16)
-	a2=int(fieldTable(2,n1),16) ^ int(fieldTable(9,n2),16)
-	return '{:x}'.format(a1),'{:x}'.format(a2)
-
-def keyGen(key):	
-	k=[[],[],[]] #6 words(bytes) or 3x 16 bit 
-	w = []
-	key = key.replace(' ','')
-	rc1 = '10000000'
-	rc2 = '00110000'
-	t2=''
-	t4=''
-	print "======Key-Gen======\n\n"
-	#print(xorbin('1000','0111'))
-	#print key
-	w.append(key[:8])  			#w0
-	w.append(key[8:])			#w1
-	
-	#print 'w[1]	:'+binToHex(w[1])
-	temp=rotate(w[1])
-	tx1=hexToBin(subNibble(temp[:4]))
-	tx2=hexToBin(subNibble(temp[4:]))
-	#print tx1+tx2
-	t2=xorbin(tx1+tx2,rc1)
-	#print binToHex(t2)
-	
-	w.append(xorbin(t2,w[0]))	#w2
-	w.append(xorbin(w[2],w[1])) #w3
-	
-	temp=rotate(w[3])
-	tx1=hexToBin(subNibble(temp[:4]))
-	tx2=hexToBin(subNibble(temp[4:]))
-	#print tx1+tx2
-	t4=xorbin(tx1+tx2,rc2)
-	#print binToHex(t4)
+	#print h,"*",num,"=",hex(val)
+	return hex(val)[2:]
+			
+def mix(state):
+	s00= xor(mult(1,state[0]),mult(4,state[1]))
+	s10= xor(mult(4,state[0]),mult(1,state[1]))
+	s01= xor(mult(1,state[2]),mult(4,state[3]))
+	s11= xor(mult(4,state[2]),mult(1,state[3]))
+	return s00+s10+s01+s11
 
 	
-	w.append(xorbin(t4,w[2])) 	#w4
-	w.append(xorbin(w[4],w[3])) #w5
+def mix_inv(state):
+	s00= xor(mult(9,state[0]),mult(2,state[1]))
+	s10= xor(mult(2,state[0]),mult(9,state[1]))
+	s01= xor(mult(9,state[2]),mult(2,state[3]))
+	s11= xor(mult(2,state[2]),mult(9,state[3]))
+	return s00+s10+s01+s11	
 	
-	k[0]=w[0]+w[1]
-	k[1]=w[2]+w[3]
-	k[2]=w[4]+w[5]
-	print 'Key 0		:' +k[0] + "  " +binToHex(k[0])	
-	print 'Key 1		:' +k[1] + "  " +binToHex(k[1])
-	print 'Key 2		:' +k[2] + "  " +binToHex(k[2])
-	return k
+def encrypt(pt,k):
 
-def genCipher(plain,k):
-
-	print '\n\n -----Encryption----- \n'
-	print 'Plain Text	:' +plain + "  " +binToHex(plain)
-	print '\nPreGame'
-	print 'Key 0		:' +k[0] + "  " +binToHex(k[0])
+	pt = hex(int(pt.replace(' ',''),2))[2:]
+	print "Plain",pt
+	#PreGame
+	temp= xor(pt,k[0])
+	print "Pre",temp
 	
-	#Pre Round Transform
-	prt = xorbin(plain,k[0],16)
-	print 'PreR		:'+ prt+ "  " +binToHex(prt)
-		
-		
-	#Round 1
-	print '\nRound 1'
-	temp=''
-	for i in range(4):
-		temp+= subNibble(prt[i*4:(i+1)*4])	
-	print 'Sub :'+temp
+	#R1
+	temp=rot(temp)
+	print "Rot",temp
+	temp=sub(temp,S)
+	print "Sub",temp
+	temp =mix(temp)
+	print "Mix",temp
+	temp = xor(temp,k[1])
 	
-	
-	#t1=temp[:2]
-	#t2=rotate(temp[2:],1)
-	#temp=t1+t2
-	t1=temp[0]+temp[3]+temp[2]+temp[1]
-	temp=t1
-	print 'Rot :'+temp
-	
-	t0,t1	= mixcolumns(temp[0],temp[1])
-	t2,t3	= mixcolumns(temp[2],temp[3])
-	temp = t0+t1+t2+t3
-	print 'MIX :'+ temp
-	
-	print 'Key 1		:' +k[1] + "  " +binToHex(k[1])
-	temp=xorhex(temp,binToHex(k[1]))
-	print 'ARK :'+ temp
-	
-	print '\nRound 2'	
-	#Round 2
-	prt=hexToBin(temp,16)
-	print 'PRT2 :'+ prt
-	temp=''
-	for i in range(4):
-		temp+=subNibble(prt[i*4:(i+1)*4])
-	print 'Sub :'+temp
-	
-	t1=temp[0]+temp[3]+temp[2]+temp[1]
-	temp=t1
-	print 'Rot :'+temp
-	
-	print 'Key 2		:' +k[2] + "  " +binToHex(k[2])
-	temp=xorhex(temp,binToHex(k[2]))
-	print 'ARK :'+ temp
-	
-	
+	#R2
+	temp=rot(temp)
+	print "Rot",temp
+	temp=sub(temp,S)
+	print "Sub",temp
+	temp = xor(temp,k[2])
+	print	"cipher",temp
 	return temp
 	
-def genPlain(cipher,k):
+def decrypt(cipher,k):
+	print	"\n\n\nCipher",cipher
+	#R2 i 
+	temp = xor(cipher,k[2])
+	temp=sub(temp,Si)
+	temp=rot(temp)
 	
-	print '\n\n -----Decryption----- \n'
-	temp=cipher
-	print 'temp		:',temp
+	print "R2 i",temp
 	
-	#r2inv
-	temp=xorhex(temp,binToHex(k[2]))
-	print 'temp		:',temp
+	#R1 i
+	temp = xor(temp,k[1])
+
+	temp =mix_inv(temp)
+	temp=sub(temp,Si)
+	#print "R1 i",temp
+	temp=rot(temp)
+	print "R1 i",temp
 	
-	t1=temp[0]+temp[3]+temp[2]+temp[1]
-	temp=t1
-	print 'temp		:',temp
-	
-	prt=hexToBin(temp,16)
-	#print 'PRT2 :'+ prt
-	temp=''
-	for i in range(4):
-		temp+=invSubNibble(prt[i*4:(i+1)*4])
-	
-	print 'Give to r1 inv :',temp	
-		
-	#r1	inv
-	temp=xorhex(temp,binToHex(k[1]))	
-	print 'temp		:',temp
-	
-	t0,t1	= invmixcolumns(temp[0],temp[1])
-	t2,t3	= invmixcolumns(temp[2],temp[3])
-	temp = t0+t1+t2+t3
-	print 'temp		:',temp
-	
-	t1=temp[0]+temp[3]+temp[2]+temp[1]
-	temp=t1
-	print 'temp		:',temp
-	
-	prt=hexToBin(temp,16)
-	temp=''
-	for i in range(4):
-		temp+= invSubNibble(prt[i*4:(i+1)*4])	
-		
-	#pre round	
-	temp = xorhex(temp,binToHex(k[0]))
-	print 'temp		Final:',temp
+	#pre
+	temp= xor(temp,k[0])
+	print "Plain",temp
 	
 	return temp
 	
 	
 	
 def main():
-	key = "0010 0100 0111 0101" #16 bit
-	plain = "0001 1010 0010 0011" #16 bit
-	rounds = 2
-	plain = plain.replace(' ','')
-	k = keyGen(key)
-	#for i in range(16):
-	#	fieldMul(4,i)
-	cipher=genCipher(plain,k)
-	print "Cipher	       :",hexToBin(cipher,16)," 0x",cipher 
-	
-	pt=genPlain(cipher,k)
-	print "Plain	       :",hexToBin(pt,16)," 0x",pt 
-	#print binToHex(k[0])
-	#print binToHex(k[1])
-	#print binToHex(k[2])
-	
-	
+	subk = keygen(key)
+	print subk
+	cipher=encrypt(pt,subk)
+	#print cipher
+	plain = decrypt(cipher,subk)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 	main()

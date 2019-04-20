@@ -1,0 +1,48 @@
+1]  Satus of master or slve on app 
+	Sate ogf band group formed and name assignmeed
+	Master sees people nearby
+	Slave direct/Indirect
+	Ping  to checck band
+	
+2]	States {0-4} converted to Strings proper meaning
+
+3] Chosing which to make master 
+	Naming the devices 
+	Rebooting
+	Help button 
+	
+	Slave bands are constraint to cetrains functions only
+	All bands can act as master or slave
+
+4]	Red Color Help button with exclimation mark
+	No-need to rescan QR code
+	
+5]  Pro - Blutooth Gps propot to turn on
+		- inform user if no master in group
+	Con - Bands reboot on crash needs to fixed with a phone
+	
+	
+6] Pro - Add instructions on opening app fisrt infrom
+		Added names to salves nband so teacher dosnet have to remember 
+		whuch band is whose
+		
+
+  Con - not all info on one screen, cucle through cards	
+  On reboot names must be reassigned 		
+  
+7]   Buuton on slave to see details nearby
+	Novice dosent use it
+	Auto Save's Names of bands to resassign
+	
+8] Salves screen miniilist
+	Master
+	RSSI hadden from slaves only maste sees it as distance
+	
+9] Propt blutooth off|GPS
+	prpot No master
+	
+Bands - no error recovery
+
+10]No docs provided
+
+			

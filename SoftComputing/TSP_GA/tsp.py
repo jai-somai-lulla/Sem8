@@ -6,6 +6,13 @@ from operator import itemgetter
 import operator
 from matplotlib import pyplot as plt
 
+
+
+population_size = 15 #Paths
+chromosome_size = 8 #Citys in path
+GENERATIONS = 10
+	
+	
 #def showList(l):
 #	for c in l:
 		
@@ -29,7 +36,7 @@ class City:
 		if(self.x==city.x and self.y==city.y):
 			return True
 		return False
-				
+					
 #DNA||CHROMOSOME
 class Path:
 	#cList=CityList
@@ -76,7 +83,7 @@ class Path:
 		return fit	
 			
 	def plot(self,g):
-		plt.title("TSP:"+str(self.fitness())+" Genetaion :"+str(g))
+		plt.title("TSP:"+str(self.fitness())+"  "+str(g))
 		plt.style.use('seaborn-whitegrid')
 		for i in range(len(self.path)):
 			plt.scatter(self.path[i].x,self.path[i].y,marker='.', c='r', s=50)
@@ -84,7 +91,7 @@ class Path:
 			plt.text(self.path[i].x+0.1,self.path[i].y+0, 'C{i}'.format(i=i),fontsize=15)
 		
 		#plt.show(block=False)
-		plt.pause(0.1)
+		plt.pause(0.01)
 		#raw_input("Press any Key to Continue:")			
 		plt.clf()
 		#plt.cla()
@@ -207,6 +214,10 @@ def rank(wpop,population_size):
 		i=0
 		cumSum=0
 		temp = list(ranked)
+		random.shuffle(temp)
+		#print temp
+		#for i in temp:
+		#	print i
 		r = random.randrange(0,np.sum(np.array(temp)[:,1]))
 		#print "Rand:",r
 
@@ -309,23 +320,21 @@ def mutate(population):
 	return mutate_pop
 def main():
 	#print 'TSP'
-	population_size = 30 #Paths
-	chromosome_size = 9 #Citys in path
-	GENERATIONS = 25
-	
+
 	cityList=[]
 	for i in range(chromosome_size):
-		 cityList.append(City(random.randrange(0,100),random.randrange(0,100)))
+		 cityList.append(City(random.randrange(0,1000),random.randrange(0,1000)))
 	
 
 	pmain = init_population(population_size,cityList)	
 
 
-	num_method=4
-	num_rows=2
+	num_method=5
+	#num_rows=2
 	
 	#final_fit=np.array(([[0.0]*num_method])*num_rows)
 	final_fit=np.array([0.0]*num_method)
+	
 	for method in range(num_method):
 		population=list(pmain)
 		for g in range(GENERATIONS):
@@ -335,8 +344,11 @@ def main():
 			fittest = max(wpop, key = itemgetter(1))[0] 
 			#print "GENERATION",g,"Best :","Fitness:",fittest.fitness()	
 			#fittest.show()
-			#fittest.plot(g)
-		
+			
+			
+			#############Turn on Live display##############
+			fittest.plot("Method:["+str(method)+"]  Genertation:"+str(g))
+			#############Turn on Live display##############		
 			if method==0:
 				population = tournament(wpop,population_size)
 			if method==1:
@@ -345,7 +357,11 @@ def main():
 				population = roulette(wpop,population_size)
 			if method==3:
 				population = rank(wpop,population_size)
-				
+			if method==4:
+				if(g<(3*GENERATIONS/4)):
+					population = roulette(wpop,population_size)	
+				else:
+					population = rank(wpop,population_size)
 				
 			population = mutate(population)
 			
@@ -360,14 +376,22 @@ def main():
 		final_fit[method]=fittest.fitness()
 	#print final_fit	
 	return final_fit
-		
+	
+def plotfiitestcurve(y):
+	p=[]
+	for i in range(len(y)):
+		p.append((i,y[i]))	
+	p = np.array(p)
+	plt.plot(p[:,0],p[:,1])
+	plt.show()		
+
+
 def data_runner():
 	data=[]
-	for i in range(20):	
+	test_cases=10
+	for i in range(test_cases):	
 		data.append(main())
 		
-	#pprint(data)
-
 	acc = np.mean(data,axis=0)
 	#print acc
 	d={}
@@ -375,12 +399,32 @@ def data_runner():
 	d['Random_select'] = acc[1]
 	d['Roulette'] = acc[2]
 	d['Rank_select'] = acc[3]
+	d['Roulette-Rank '] = acc[4]
+	
 	
 	sorted_d = sorted(d.items(), key=operator.itemgetter(1),reverse =True)
 	#pprint(sorted_d)
+	objects=[]
+	performance=[]
 	for t in sorted_d:
 		#print ''
 		print t[0],"		Average Fitness:",t[1]
+		objects.append(t[0])
+		performance.append(t[1])
+	
+	performance = ((performance ) / np.max(performance))*100
+	#print e
+	y_pos = np.arange(len(objects))
+	plt.bar(y_pos, performance, align='center', alpha=1)
+	plt.xticks(y_pos, objects)
+	plt.ylabel('Fitness Score')
+	
+	plt.rcParams["axes.titlesize"] = 8
+	plt.title('\n\nAverage Fitness Over ['+str(test_cases)+ '] Test cases' + '\nPopulation size(Number of paths):'+str(population_size)+ '\nChromosome size(Number of Cities):'+ str(chromosome_size) + "\nGENERATIONS:" +str(GENERATIONS)) 
+	plt.pause(14)
+	
+	#plt.plot()
+	#plt.savefig('Average Fitness Over ['+str(test_cases)+ '] Test cases' + ' Population size(Number of paths):'+str(population_size)+ 'Chromosome size(Number of Cities):'+ str(chromosome_size) + " GENERATIONS:" +str(GENERATIONS)+'.png')	
 		
 		
 

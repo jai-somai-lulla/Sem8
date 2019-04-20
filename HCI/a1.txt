@@ -1,0 +1,28 @@
+What is Accessibility?
+
+Accessibility defines users’ ability to use products/services, but not the extent to which they can attain goals (usability). Designers should create output accommodating the needs of all potential users, be they disabled (e.g., color-blind users) or anyone facing situational barriers (e.g., being forced to multitask). 
+
+
+
+Accessible Designs, for All
+
+In practice, accessibility is about designing for users with disabilities. Philosophically, it isn’t so much about designing for disability as it is about designing for everyone. Designing Interactive Systems’ author, David Benyon, offers five reasons an inaccessible product excludes users:
+
+    Physical – takes too much strength to use.
+    Conceptual – has hard-to-understand instructions.
+    Economic – is too expensive.
+    Cultural – users can’t understand metaphors regarding product interaction.
+    Social – on joining a group, users don’t understand that group’s social conventions.
+
+A 2011 W.H.O. report revealed about 15% of the world’s population had some disability. When designing, you should consider the number and type of potential accessibility issues users will have. Barriers include visual (e.g., color blindness), motor/mobility (e.g., wheelchair-user concerns), auditory (hearing difficulties), seizures (especially photosensitive epilepsy) and learning (e.g., dyslexia). Also design to maximize ease of use when users (of any ability) encounter your creation in stressful/mobile situations. By designing to reach all ability levels, you’ll produce output virtually anyone can use and enjoy (or find helpful/calming), whatever the context. Designing for accessibility thus helps all users. 
+
+
+Helping all users by designing for accessibility is also known as universal design. You can increase accessibility by applying the following Universal Design principles:
+
+    Equitable Use – Design to accommodate users with diverse abilities (e.g., deafness).
+    Flexible Use – E.g., accommodate right- and left-handedness.
+    Simple, Intuitive Use – Simplify complex information. Use a proper information hierarchy, progressive disclosure and effective prompting towards task completion.
+    Perceptible Information – Optimize readability of vital information and present information redundantly (i.e., use pictures and text).
+    Tolerance for Error – Arrange elements to minimize accidental actions. E.g., ensure users have data validation so they can only book reservations in the future.
+    Low Physical Effort – E.g., minimize repetitive actions.
+    Size and Space for Approach and Use – E.g., accommodate touch target areas for average-sized fingertips.

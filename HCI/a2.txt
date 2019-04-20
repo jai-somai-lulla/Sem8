@@ -1,0 +1,18 @@
+Why Do You Need A Persona?
+
+Whether you’re developing a smartphone app or a mobile-responsive website, it’s very important to understand who will be using the product. In order to solve a real user problem, you need to have a clear problem statement in mind; in order to write this problem statement, you first need to understand your users and their needs. 
+
+Knowing your audience will help influence the features and design elements you choose, thus making your product more useful. A persona clarifies who is in your target audience by answering the following questions:
+
+    Who is my ideal customer?
+    What are the current behavior patterns of my users?
+    What are the needs and goals of my users?
+    What issues and pain-points do they currently face within the given context?
+
+Understanding the needs of your users is vital to developing a successful product. Well-defined personas will enable you to efficiently identify and communicate user needs. Personas will also help you describe the individuals who use your product, which is essential to your overall value proposition.
+
+Personas help with strategizing and making smart design decisions. They make real users memorable for the product team, helping to focus efforts and build empathy.
+
+So, in a nutshell, user personas are crucial if you want to design something that is useful, desirable, and valuable to your target audience. A solid user persona is your northern star, guiding your design decisions from start to finish.
+
+Not only that. Most designers work in multidisciplinary teams where it’s important to communicate your findings from the user research stage. Personas encompass all the essential details about your users, presenting them in a memorable way that everyone can understand—not just designers.
