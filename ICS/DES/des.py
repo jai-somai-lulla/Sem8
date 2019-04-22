@@ -52,7 +52,7 @@ def F(r,k):
 	e = permute(E,r)
 	l = sbox(e[:4],S0)
 	r = sbox(e[4:],S1)
-	mask = bin(int(l+r,2)^int(k,2))[2:].zfill(4)
+	mask = bin(int(l+r,2)^int(k,2))[2:].zfill(8)
 	
 	return permute(P4,mask)
 		
